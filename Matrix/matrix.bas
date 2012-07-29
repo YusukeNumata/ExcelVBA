@@ -1,59 +1,63 @@
 Attribute VB_Name = "matrix"
 
-Sub main()
-    
+Dim OUTPUT_SHEET_NAME As String
+
+Public Sub PROC_MATRIX_CREATER()
     Call init
-    
-    '新規シートの追加
-    'Worksheets.Add after:=Worksheets("項目")
-    
-    
-
-
+    Call main
+    Call finally
 End Sub
 
 
-Function init()
-    
-    'アクティブシートの変更
-    Worksheets("項目").Activate
+Private Function init()
+    Call fncCreateOutputSheet
+End Function
 
+Private Function main()
     Call fncLoop(1, 1)
+End Function
+
+Private Function finally()
+    Worksheets(OUTPUT_SHEET_NAME).Activate
+End Function
+
+Private Function fncCreateOutputSheet()
     
+    Dim active_sheet_name As String
+    active_sheet_name = activeSheet.name
+
+    Worksheets.Add after:=Worksheets(active_sheet_name)
+    OUTPUT_SHEET_NAME = activeSheet.name
+
+    Worksheets(active_sheet_name).Activate
 
 End Function
 
-Function fncLoop(row As Long, column As Long) As Boolean
+
+Private Function fncLoop(row As Long, col As Long)
     
     Dim rtnVal As Boolean
-    Dim rowSize As Long
-    rowSize = fncGetRowSize(column)
+    Dim rowsize As Long
+    rowsize = fncGetRowSize(col)
     
-    For i = 1 To rowSize
+    For i = 1 To rowsize
         
-        Cells(5 + row, column).Value = Cells(i, column).Value
+        Worksheets(OUTPUT_SHEET_NAME).Cells(row, col).Value = Cells(i, col).Value
         
-        If Cells(i, column + 1).Value <> "" Then
-            rtnVal = fncLoop(row, column + 1)
-        End If
-        
-        If rtnVal <> True Then
+        If Cells(1, col + 1).Value <> "" Then
+            Call fncLoop(row, col + 1)
+        Else
             row = row + 1
         End If
     
     Next
 
-    fncLoop = True
-    
-
 End Function
 
-
-'指定されたカラムの最大行を取得する
-Function fncGetRowSize(column As Long) As Long
+Private Function fncGetRowSize(col As Long) As Long
     Dim row As Long
     row = 1
-    Do While Cells(row + 1, column).Value <> ""
+    Do While Cells(row + 1, col).Value <> ""
         row = row + 1
     Loop
     fncGetRowSize = row
